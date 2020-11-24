@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>TweetME</title>
+{% endblock head %}
+
+
+
+{% block content %}
+<h1>Welcome to TweetMe</h1>
+
+<div id="tweets">
+    Loading...
+</div>
+
+<script>
+    const tweetElememts = document.querySelector("#tweets");
+
+    const xhr = new XMLHttpRequest();
+    const method = "GET";
+    const url = "/tweets";
+    const responseType = "json";
+
+    const handleDidLike = (tweet_id, currentLikes) => {
+        console.log(tweet_id, currentLikes)
+    }
+
+    const likeButton = (tweet) => {
+        return `<button class='btn btn-primary btn-small' onclick="handleDidLike(${tweet.id}, ${tweet.likes})">Like (${tweet.likes})</button>`
+    }
+
+    const formatTweetElements = (tweet) => {
+        return `<div class='mb-4 tweet' id=tweet-${tweet.id}><p>${tweet.content}</p><div class='btn-group'>${likeButton(tweet)}</div></div>`
+    }
+
+    xhr.responseType = responseType;
+    xhr.open(method, url);
+    xhr.onload = () => {
+        const serverResponse = xhr.response;
+        const listedItems = serverResponse.response;
+        let finalTweetStr = "";
+        for (let i = 0; i < listedItems.length; i++) {
+            finalTweetStr += formatTweetElements(listedItems[i]);
+        }
+        tweetElememts.innerHTML = finalTweetStr
+    };
+    xhr.send();
+
+
+</script>
+{% endblock content %}
