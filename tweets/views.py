@@ -16,11 +16,22 @@ def home_view(request, *args, **kwargs):
 
 
 def tweet_create_view(request, *args, **kwargs):
+    """
+    Rest API Create View -> Django Rest Framework
+    """
     # print("ajax", request.is_ajax())
+    user = request.user
+    if not request.user.is_authenticated:
+        user = None
+        if request.is_ajax():
+            return JsonResponse({}, status=401)
+        return redirect(settings.LOGIN_URL)
     form = TweetForm(request.POST or None)
     next_url = request.POST.get("next") or None
     if form.is_valid():
         obj = form.save(commit=False)
+        # other form related logic
+        obj.user = user
         obj.save()
         if request.is_ajax():
             return JsonResponse(
